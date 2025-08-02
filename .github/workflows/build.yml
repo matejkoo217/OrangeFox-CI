@@ -10,7 +10,7 @@ jobs:
       image: ghcr.io/sushrut1101/docker:arch
 
     env:
-      FOX_BRANCH: fox_14.1
+      FOX_BRANCH: 14.1
       DEVICE: lisa
       OEM: xiaomi
       DT_LINK: https://github.com/LineageOS/android_device_xiaomi_lisa.git -b lineage-21
@@ -25,13 +25,41 @@ jobs:
       J_VAL: 16
 
     steps:
-      - name: Checkout CI scripts (you can replace this with your repo if customized)
+      - name: Checkout CI scripts
         uses: actions/checkout@v3
 
       - name: Sync OrangeFox sources
+        env:
+          FOX_BRANCH: ${{ env.FOX_BRANCH }}
+          DEVICE: ${{ env.DEVICE }}
+          OEM: ${{ env.OEM }}
+          DT_LINK: ${{ env.DT_LINK }}
+          TARGET: ${{ env.TARGET }}
+          OUTPUT: ${{ env.OUTPUT }}
+          EXTRA_CMD: ${{ env.EXTRA_CMD }}
+          OF_USE_LATEST_MAGISK: ${{ env.OF_USE_LATEST_MAGISK }}
+          SYNC_PATH: ${{ env.SYNC_PATH }}
+          USE_CCACHE: ${{ env.USE_CCACHE }}
+          CCACHE_SIZE: ${{ env.CCACHE_SIZE }}
+          CCACHE_DIR: ${{ env.CCACHE_DIR }}
+          J_VAL: ${{ env.J_VAL }}
         run: bash -c "$(curl -sL https://raw.githubusercontent.com/OrangeFoxRecovery/OrangeFox-CI/fox/scripts/sync.sh)"
 
       - name: Build recovery
+        env:
+          FOX_BRANCH: ${{ env.FOX_BRANCH }}
+          DEVICE: ${{ env.DEVICE }}
+          OEM: ${{ env.OEM }}
+          DT_LINK: ${{ env.DT_LINK }}
+          TARGET: ${{ env.TARGET }}
+          OUTPUT: ${{ env.OUTPUT }}
+          EXTRA_CMD: ${{ env.EXTRA_CMD }}
+          OF_USE_LATEST_MAGISK: ${{ env.OF_USE_LATEST_MAGISK }}
+          SYNC_PATH: ${{ env.SYNC_PATH }}
+          USE_CCACHE: ${{ env.USE_CCACHE }}
+          CCACHE_SIZE: ${{ env.CCACHE_SIZE }}
+          CCACHE_DIR: ${{ env.CCACHE_DIR }}
+          J_VAL: ${{ env.J_VAL }}
         run: bash -c "$(curl -sL https://raw.githubusercontent.com/OrangeFoxRecovery/OrangeFox-CI/fox/scripts/build.sh)"
 
       - name: Upload recovery ZIP
