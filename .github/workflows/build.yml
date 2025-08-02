@@ -31,12 +31,12 @@ jobs:
         run: git clone https://github.com/OrangeFoxRecovery/OrangeFox-CI.git ${{ env.SYNC_PATH }}/OrangeFox-CI
 
       - name: Sync OrangeFox sources
-        run: bash ${{ env.SYNC_PATH }}/OrangeFox-CI/fox/scripts/sync.sh --branch 14.1 --path ${{ env.SYNC_PATH }}/fox_14.1
+        run: bash ${{ env.SYNC_PATH }}/OrangeFox-CI/scripts/sync.sh --branch 14.1 --path ${{ env.SYNC_PATH }}/fox_14.1
 
       - name: Build recovery
         run: |
           cd ${{ env.SYNC_PATH }}/fox_14.1
-          bash ${{ env.SYNC_PATH }}/OrangeFox-CI/fox/scripts/build.sh
+          bash ${{ env.SYNC_PATH }}/OrangeFox-CI/scripts/build.sh
 
       - name: Upload recovery ZIP
         uses: actions/upload-artifact@v4
