@@ -31,6 +31,7 @@ jobs:
       - name: Sync OrangeFox sources
         env:
           FOX_BRANCH: ${{ env.FOX_BRANCH }}
+          SYNC_PATH: ${{ env.SYNC_PATH }}
           DEVICE: ${{ env.DEVICE }}
           OEM: ${{ env.OEM }}
           DT_LINK: ${{ env.DT_LINK }}
@@ -38,16 +39,17 @@ jobs:
           OUTPUT: ${{ env.OUTPUT }}
           EXTRA_CMD: ${{ env.EXTRA_CMD }}
           OF_USE_LATEST_MAGISK: ${{ env.OF_USE_LATEST_MAGISK }}
-          SYNC_PATH: ${{ env.SYNC_PATH }}
           USE_CCACHE: ${{ env.USE_CCACHE }}
           CCACHE_SIZE: ${{ env.CCACHE_SIZE }}
           CCACHE_DIR: ${{ env.CCACHE_DIR }}
           J_VAL: ${{ env.J_VAL }}
-        run: bash -c "$(curl -sL https://raw.githubusercontent.com/OrangeFoxRecovery/OrangeFox-CI/fox/scripts/sync.sh)"
+        run: |
+          bash -c "bash <(curl -sL https://raw.githubusercontent.com/OrangeFoxRecovery/OrangeFox-CI/fox/scripts/sync.sh) --branch $FOX_BRANCH --path $SYNC_PATH/fox_$FOX_BRANCH"
 
       - name: Build recovery
         env:
           FOX_BRANCH: ${{ env.FOX_BRANCH }}
+          SYNC_PATH: ${{ env.SYNC_PATH }}
           DEVICE: ${{ env.DEVICE }}
           OEM: ${{ env.OEM }}
           DT_LINK: ${{ env.DT_LINK }}
@@ -55,12 +57,13 @@ jobs:
           OUTPUT: ${{ env.OUTPUT }}
           EXTRA_CMD: ${{ env.EXTRA_CMD }}
           OF_USE_LATEST_MAGISK: ${{ env.OF_USE_LATEST_MAGISK }}
-          SYNC_PATH: ${{ env.SYNC_PATH }}
           USE_CCACHE: ${{ env.USE_CCACHE }}
           CCACHE_SIZE: ${{ env.CCACHE_SIZE }}
           CCACHE_DIR: ${{ env.CCACHE_DIR }}
           J_VAL: ${{ env.J_VAL }}
-        run: bash -c "$(curl -sL https://raw.githubusercontent.com/OrangeFoxRecovery/OrangeFox-CI/fox/scripts/build.sh)"
+        run: |
+          cd $SYNC_PATH/fox_$FOX_BRANCH
+          bash -c "$(curl -sL https://raw.githubusercontent.com/OrangeFoxRecovery/OrangeFox-CI/fox/scripts/build.sh)"
 
       - name: Upload recovery ZIP
         uses: actions/upload-artifact@v4
