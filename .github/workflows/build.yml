@@ -27,41 +27,19 @@ jobs:
       - name: Checkout CI scripts
         uses: actions/checkout@v3
 
+      - name: Clone OrangeFox-CI repo
+        run: git clone https://github.com/OrangeFoxRecovery/OrangeFox-CI.git ${{ env.SYNC_PATH }}/OrangeFox-CI
+
       - name: Sync OrangeFox sources
-        env:
-          DEVICE: ${{ env.DEVICE }}
-          OEM: ${{ env.OEM }}
-          DT_LINK: ${{ env.DT_LINK }}
-          TARGET: ${{ env.TARGET }}
-          OUTPUT: ${{ env.OUTPUT }}
-          EXTRA_CMD: ${{ env.EXTRA_CMD }}
-          OF_USE_LATEST_MAGISK: ${{ env.OF_USE_LATEST_MAGISK }}
-          USE_CCACHE: ${{ env.USE_CCACHE }}
-          CCACHE_SIZE: ${{ env.CCACHE_SIZE }}
-          CCACHE_DIR: ${{ env.CCACHE_DIR }}
-          J_VAL: ${{ env.J_VAL }}
-        run: |
-          bash -c "bash <(curl -sL https://raw.githubusercontent.com/OrangeFoxRecovery/OrangeFox-CI/fox/scripts/sync.sh) --branch 14.1 --path ${{ env.SYNC_PATH }}/14.1"
+        run: bash ${{ env.SYNC_PATH }}/OrangeFox-CI/fox/scripts/sync.sh --branch 14.1 --path ${{ env.SYNC_PATH }}/fox_14.1
 
       - name: Build recovery
-        env:
-          DEVICE: ${{ env.DEVICE }}
-          OEM: ${{ env.OEM }}
-          DT_LINK: ${{ env.DT_LINK }}
-          TARGET: ${{ env.TARGET }}
-          OUTPUT: ${{ env.OUTPUT }}
-          EXTRA_CMD: ${{ env.EXTRA_CMD }}
-          OF_USE_LATEST_MAGISK: ${{ env.OF_USE_LATEST_MAGISK }}
-          USE_CCACHE: ${{ env.USE_CCACHE }}
-          CCACHE_SIZE: ${{ env.CCACHE_SIZE }}
-          CCACHE_DIR: ${{ env.CCACHE_DIR }}
-          J_VAL: ${{ env.J_VAL }}
         run: |
-          cd ${{ env.SYNC_PATH }}/14.1
-          bash -c "$(curl -sL https://raw.githubusercontent.com/OrangeFoxRecovery/OrangeFox-CI/fox/scripts/build.sh)"
+          cd ${{ env.SYNC_PATH }}/fox_14.1
+          bash ${{ env.SYNC_PATH }}/OrangeFox-CI/fox/scripts/build.sh
 
       - name: Upload recovery ZIP
         uses: actions/upload-artifact@v4
         with:
           name: ofox-build
-          path: ${{ env.SYNC_PATH }}/14.1/out/target/product/${{ env.DEVICE }}/${{ env.OUTPUT }}
+          path: ${{ env.SYNC_PATH }}/fox_14.1/out/target/product/${{ env.DEVICE }}/${{ env.OUTPUT }}
