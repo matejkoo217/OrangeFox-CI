@@ -10,7 +10,6 @@ jobs:
       image: ghcr.io/sushrut1101/docker:arch
 
     env:
-      FOX_BRANCH: 14.1
       DEVICE: lisa
       OEM: xiaomi
       DT_LINK: https://github.com/LineageOS/android_device_xiaomi_lisa.git -b lineage-21
@@ -30,8 +29,6 @@ jobs:
 
       - name: Sync OrangeFox sources
         env:
-          FOX_BRANCH: ${{ env.FOX_BRANCH }}
-          SYNC_PATH: ${{ env.SYNC_PATH }}
           DEVICE: ${{ env.DEVICE }}
           OEM: ${{ env.OEM }}
           DT_LINK: ${{ env.DT_LINK }}
@@ -44,12 +41,10 @@ jobs:
           CCACHE_DIR: ${{ env.CCACHE_DIR }}
           J_VAL: ${{ env.J_VAL }}
         run: |
-          bash -c "bash <(curl -sL https://raw.githubusercontent.com/OrangeFoxRecovery/OrangeFox-CI/fox/scripts/sync.sh) --branch $FOX_BRANCH --path $SYNC_PATH/fox_$FOX_BRANCH"
+          bash -c "bash <(curl -sL https://raw.githubusercontent.com/OrangeFoxRecovery/OrangeFox-CI/fox/scripts/sync.sh) --branch 14.1 --path ${{ env.SYNC_PATH }}/fox_14.1"
 
       - name: Build recovery
         env:
-          FOX_BRANCH: ${{ env.FOX_BRANCH }}
-          SYNC_PATH: ${{ env.SYNC_PATH }}
           DEVICE: ${{ env.DEVICE }}
           OEM: ${{ env.OEM }}
           DT_LINK: ${{ env.DT_LINK }}
@@ -62,11 +57,11 @@ jobs:
           CCACHE_DIR: ${{ env.CCACHE_DIR }}
           J_VAL: ${{ env.J_VAL }}
         run: |
-          cd $SYNC_PATH/fox_$FOX_BRANCH
+          cd ${{ env.SYNC_PATH }}/fox_14.1
           bash -c "$(curl -sL https://raw.githubusercontent.com/OrangeFoxRecovery/OrangeFox-CI/fox/scripts/build.sh)"
 
       - name: Upload recovery ZIP
         uses: actions/upload-artifact@v4
         with:
           name: ofox-build
-          path: ${{ env.SYNC_PATH }}/fox_${{ env.FOX_BRANCH }}/out/target/product/${{ env.DEVICE }}/${{ env.OUTPUT }}
+          path: ${{ env.SYNC_PATH }}/fox_14.1/out/target/product/${{ env.DEVICE }}/${{ env.OUTPUT }}
