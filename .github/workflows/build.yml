@@ -41,7 +41,7 @@ jobs:
           CCACHE_DIR: ${{ env.CCACHE_DIR }}
           J_VAL: ${{ env.J_VAL }}
         run: |
-          bash -c "bash <(curl -sL https://raw.githubusercontent.com/OrangeFoxRecovery/OrangeFox-CI/fox/scripts/sync.sh) --branch 14.1 --path ${{ env.SYNC_PATH }}/fox_14.1"
+          bash -c "bash <(curl -sL https://raw.githubusercontent.com/OrangeFoxRecovery/OrangeFox-CI/fox/scripts/sync.sh) --branch 14.1 --path ${{ env.SYNC_PATH }}/14.1"
 
       - name: Build recovery
         env:
@@ -57,11 +57,11 @@ jobs:
           CCACHE_DIR: ${{ env.CCACHE_DIR }}
           J_VAL: ${{ env.J_VAL }}
         run: |
-          cd ${{ env.SYNC_PATH }}/fox_14.1
+          cd ${{ env.SYNC_PATH }}/14.1
           bash -c "$(curl -sL https://raw.githubusercontent.com/OrangeFoxRecovery/OrangeFox-CI/fox/scripts/build.sh)"
 
       - name: Upload recovery ZIP
         uses: actions/upload-artifact@v4
         with:
           name: ofox-build
-          path: ${{ env.SYNC_PATH }}/fox_14.1/out/target/product/${{ env.DEVICE }}/${{ env.OUTPUT }}
+          path: ${{ env.SYNC_PATH }}/14.1/out/target/product/${{ env.DEVICE }}/${{ env.OUTPUT }}
