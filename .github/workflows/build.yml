@@ -1,73 +1,41 @@
-name: Build OrangeFox Recovery for lisa
+name: Build OrangeFox
 
 on:
   workflow_dispatch:
-  push:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Build OrangeFox
+    container:
+      image: ghcr.io/sushrut1101/docker:arch
+
     env:
       FOX_BRANCH: fox_14.1
       DEVICE: lisa
       OEM: xiaomi
+      DT_LINK: https://github.com/LineageOS/android_device_xiaomi_lisa.git -b lineage-21
       TARGET: bootimage
       OUTPUT: OrangeFox*.zip
-      OF_MAINTAINER: ~jkoo
+      EXTRA_CMD: export OF_MAINTAINER=~jkoo
       OF_USE_LATEST_MAGISK: true
+      SYNC_PATH: /tmp/work
+      USE_CCACHE: 1
+      CCACHE_SIZE: 50G
+      CCACHE_DIR: /tmp/work/.ccache
       J_VAL: 16
 
     steps:
-      - name: Checkout this repo
+      - name: Checkout CI scripts (you can replace this with your repo if customized)
         uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y bc bison build-essential ccache curl flex \
-            git gnupg gperf libncurses5-dev libssl-dev libxml2-utils lzop \
-            pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev \
-            python-is-python3 openjdk-11-jdk
-
-      - name: Setup ccache
-        run: |
-          sudo apt-get install -y ccache
-          echo "export USE_CCACHE=1" >> ~/.bashrc
-          echo "export CCACHE_DIR=${{ github.workspace }}/.ccache" >> ~/.bashrc
-          echo "ccache setup complete"
-
-      - name: Clone OrangeFox sync repo and sync sources
-        run: |
-          mkdir -p $HOME/work && cd $HOME/work
-          git clone https://gitlab.com/OrangeFox/sync.git
-          cd sync
-          ./orangefox_sync.sh --branch $FOX_BRANCH --path $HOME/work/fox_$FOX_BRANCH
-
-      - name: Clone device tree + kernel + vendor
-        run: |
-          cd $HOME/work/fox_$FOX_BRANCH
-          git clone https://github.com/LineageOS/android_device_xiaomi_lisa.git -b lineage-21.0 device/xiaomi/lisa
-          git clone https://github.com/LineageOS/android_kernel_xiaomi_lisa.git kernel/xiaomi/lisa
-          git clone https://github.com/LineageOS/android_vendor_xiaomi_lisa.git vendor/xiaomi/lisa
-
-      - name: Export env vars
-        run: |
-          export OF_MAINTAINER="${{ env.OF_MAINTAINER }}"
-          export OF_USE_LATEST_MAGISK="${{ env.OF_USE_LATEST_MAGISK }}"
-          export FOX_VIRTUAL_AB_DEVICE=1
+      - name: Sync OrangeFox sources
+        run: bash -c "$(curl -sL https://raw.githubusercontent.com/OrangeFoxRecovery/OrangeFox-CI/fox/scripts/sync.sh)"
 
       - name: Build recovery
-        run: |
-          cd $HOME/work/fox_$FOX_BRANCH
-          source build/envsetup.sh
-          lunch twrp_${{ env.DEVICE }}-eng
-          mka -j${{ env.J_VAL }} ${{ env.TARGET }}
+        run: bash -c "$(curl -sL https://raw.githubusercontent.com/OrangeFoxRecovery/OrangeFox-CI/fox/scripts/build.sh)"
 
-      - name: Upload OrangeFox output
+      - name: Upload recovery ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: orangefox-${{ env.DEVICE }}
-          path: |
-            ${{ github.workspace }}/**/OrangeFox*.zip
-            ${{ github.workspace }}/**/recovery.img
+          name: ofox-build
+          path: ${{ env.SYNC_PATH }}/fox_${{ env.FOX_BRANCH }}/out/target/product/${{ env.DEVICE }}/${{ env.OUTPUT }}
