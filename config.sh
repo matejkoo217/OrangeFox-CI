@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # OrangeFox branch to build for A14
-export FOX_BRANCH="fox_14.1"
+export FOX_BRANCH="14.1"
 
 # Use LOS device tree for A14
 export DT_LINK="https://github.com/LineageOS/android_device_xiaomi_lisa.git -b lineage-21"
