@@ -24,19 +24,43 @@ jobs:
       J_VAL: 16
 
     steps:
-      - name: Checkout CI scripts
+      - name: Checkout repo with scripts
         uses: actions/checkout@v3
 
-      - name: Clone OrangeFox-CI repo
-        run: git clone https://github.com/OrangeFoxRecovery/OrangeFox-CI.git ${{ env.SYNC_PATH }}/OrangeFox-CI
+      - name: Prepare working directory
+        run: mkdir -p ${{ env.SYNC_PATH }}
 
       - name: Sync OrangeFox sources
-        run: bash ${{ env.SYNC_PATH }}/OrangeFox-CI/scripts/sync.sh --branch 14.1 --path ${{ env.SYNC_PATH }}/fox_14.1
+        run: bash scripts/sync.sh --branch 14.1 --path ${{ env.SYNC_PATH }}/fox_14.1
+        env:
+          DEVICE: ${{ env.DEVICE }}
+          OEM: ${{ env.OEM }}
+          DT_LINK: ${{ env.DT_LINK }}
+          TARGET: ${{ env.TARGET }}
+          OUTPUT: ${{ env.OUTPUT }}
+          EXTRA_CMD: ${{ env.EXTRA_CMD }}
+          OF_USE_LATEST_MAGISK: ${{ env.OF_USE_LATEST_MAGISK }}
+          USE_CCACHE: ${{ env.USE_CCACHE }}
+          CCACHE_SIZE: ${{ env.CCACHE_SIZE }}
+          CCACHE_DIR: ${{ env.CCACHE_DIR }}
+          J_VAL: ${{ env.J_VAL }}
 
       - name: Build recovery
         run: |
           cd ${{ env.SYNC_PATH }}/fox_14.1
-          bash ${{ env.SYNC_PATH }}/OrangeFox-CI/scripts/build.sh
+          bash ../../scripts/build.sh
+        env:
+          DEVICE: ${{ env.DEVICE }}
+          OEM: ${{ env.OEM }}
+          DT_LINK: ${{ env.DT_LINK }}
+          TARGET: ${{ env.TARGET }}
+          OUTPUT: ${{ env.OUTPUT }}
+          EXTRA_CMD: ${{ env.EXTRA_CMD }}
+          OF_USE_LATEST_MAGISK: ${{ env.OF_USE_LATEST_MAGISK }}
+          USE_CCACHE: ${{ env.USE_CCACHE }}
+          CCACHE_SIZE: ${{ env.CCACHE_SIZE }}
+          CCACHE_DIR: ${{ env.CCACHE_DIR }}
+          J_VAL: ${{ env.J_VAL }}
 
       - name: Upload recovery ZIP
         uses: actions/upload-artifact@v4
