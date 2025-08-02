@@ -1,35 +1,35 @@
 #!/bin/bash
 
-# Device
-export FOX_BRANCH="fox_9.0"
-export DT_LINK="https://gitlab.com/OrangeFox/device/beryllium.git -b fox_9.0"
+# OrangeFox branch to build for A14
+export FOX_BRANCH="fox_14.1"
 
-export DEVICE="beryllium"
+# Use LOS device tree for A14
+export DT_LINK="https://github.com/LineageOS/android_device_xiaomi_lisa.git -b lineage-21"
+
+# Device identifiers
+export DEVICE="lisa"
 export OEM="xiaomi"
 
-# Build Target
-## "recoveryimage" - for A-Only Devices without using Vendor Boot
-## "bootimage" - for A/B devices without recovery partition (and without vendor boot)
-## "vendorbootimage" - for devices Using vendor boot for the recovery ramdisk (Usually for devices shipped with Android 12 or higher)
-export TARGET="recoveryimage"
+# lisa is Virtual A/B → no dedicated recovery partition
+export TARGET="bootimage"
 
+# Output ZIP wildcard (used during upload)
 export OUTPUT="OrangeFox*.zip"
 
-# Additional Dependencies (eg: Kernel Source)
-# Format: "repo dest"
+# Kernel and vendor repos (A14 LineageOS 21)
 DEPS=(
-    "https://github.com/OrangeFoxRecovery/Avatar.git misc"
+    "https://github.com/LineageOS/android_kernel_xiaomi_lisa.git kernel"
+    "https://github.com/LineageOS/android_vendor_xiaomi_lisa.git vendor"
 )
 
-# Extra Command
-export EXTRA_CMD="export OF_MAINTAINER=Sushrut1101"
+# Optional maintainer info (name is fine as-is)
+export EXTRA_CMD="export OF_MAINTAINER=~jkoo"
 
-# Magisk
-## Use the Latest Release of Magisk for the OrangeFox addon
+# Use latest Magisk for addon
 export OF_USE_LATEST_MAGISK=true
 
-# Not Recommended to Change
-export SYNC_PATH="$HOME/work" # Full (absolute) path.
+# Build environment
+export SYNC_PATH="$HOME/work"
 export USE_CCACHE=1
 export CCACHE_SIZE="50G"
 export CCACHE_DIR="$HOME/work/.ccache"
